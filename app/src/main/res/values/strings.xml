@@ -1,8 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Wemo Widgets</string>
+    <string name="app_name">Wemo Widgets Complex</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="configure_title">This will configure the widget</string>
+
+    <!-- MAIN ACTIVITY -->
+    <string name="notification_add">Add device&#160;</string>
+    <string name="notification_remove">Remove device&#160;</string>
+    <string name="refresh">Refresh</string>
+
+    <!-- LIST ITEM -->
+    <string name="state_on">On</string>
+    <string name="state_off">Off</string>
+    <string name="state_wait">No motion</string>
+    <string name="state_motion">Sense motion</string>
+    <string name="state_load">Load</string>
+    <string name="state_stand_by">Stand by</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+    <string name="title_activity_app_widget_configure">AppWidgetConfigure</string>
 
 </resources>
