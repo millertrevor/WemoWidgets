@@ -6,7 +6,9 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
@@ -19,39 +21,26 @@ import java.util.List;
 public class example_appwidget_info extends AppWidgetProvider {
 
     private static final String ACTION_UPDATE_CLICK =
-            "com.trevor.wemo.action.UPDATE_CLICK";
+            "com.trevor.multiplewidgettest.action.UPDATE_CLICK";
+    private static final String SeperatorCharacter = "|";
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // There may be multiple widgets active, so update all of them
-        //TODO: How can we target just the single widget we want to target here, instead of all of them?
         final int N = appWidgetIds.length;
         for (int i = 0; i < N; i++) {
             updateAppWidget(context, appWidgetManager, appWidgetIds[i]);
         }
-
-      /*  String message = getMessage();
-
-        // Loop for every App Widget instance that belongs to this provider.
-        // Noting, that is, a user might have multiple instances of the same
-        // widget on
-        // their home screen.
-        for (int appWidgetID : appWidgetIds) {
-            RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
-                    R.layout.my_widget);
-
-            remoteViews.setTextViewText(R.id.textView_output, message);
-            remoteViews.setOnClickPendingIntent(R.id.button_update,
-                    getPendingSelfIntent(context,
-                            ACTION_UPDATE_CLICK)
-            );
-
-            appWidgetManager.updateAppWidget(appWidgetID, remoteViews);
-
-        }*/
-
     }
 
+    @Override
+    public void onDeleted(Context context, int[] appWidgetIds) {
+        // When the user deletes the widget, delete the preference associated with it.
+        final int N = appWidgetIds.length;
+        for (int i = 0; i < N; i++) {
+            AppWidgetConfigure.deleteTitlePref(context, appWidgetIds[i]);
+        }
+    }
 
     @Override
     public void onEnabled(Context context) {
@@ -66,83 +55,52 @@ public class example_appwidget_info extends AppWidgetProvider {
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
 
-        CharSequence widgetText = context.getString(R.string.appwidget_text);
-        Toast.makeText(context, "From the "+appWidgetId+" widget", Toast.LENGTH_SHORT).show();
+        CharSequence widgetText = AppWidgetConfigure.loadTitlePref(context, appWidgetId);
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.example_appwidget_info);
-       // views.setTextViewText(R.id.appwidget_text, widgetText);
-        views.setOnClickPendingIntent(R.id.imageButton,getPendingSelfIntent(context,ACTION_UPDATE_CLICK));
-        views.setTextViewText(R.id.textView2,"uuid:Lightswitch-1_0-221346K13004AD");
-       // Bundle bundle = new Bundle();
-      //  bundle.putCharSequence("ID", "uuid:Lightswitch-1_0-221346K13004AD");
+        //  views.setOnClickPendingIntent(R.id.widgetID,getPendingSelfIntent(context,ACTION_UPDATE_CLICK, appWidgetId));
+        String modifiedAction = ACTION_UPDATE_CLICK+SeperatorCharacter+Integer.toString(appWidgetId);
+        Intent intent = new Intent(context, example_appwidget_info.class);
+        intent.setAction(modifiedAction);
 
-       // bundle.putParcelable("RemoteView", views);
-       // bundle.putString("test", "testString");
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        views.setOnClickPendingIntent(R.id.imageButton,pendingIntent);
+        views.setTextViewText(R.id.appwidget_text, widgetText);
 
+       // views.setTextViewText(R.id.widgetID,Integer.toString(appWidgetId));
 
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
-
-
-      //  RemoteViews remoteViews = new RemoteViews(context.getPackageName(),R.layout.my_widget);
-
-      //  remoteViews.setTextViewText(R.id.textView_output, message);
-
-
-
-     //   appWidgetManager.updateAppWidget(appWidgetID, remoteViews);
-    }
-
-    private void onUpdateFromReceive(Context context) {
-        List<Device> allForTest = Device.listAll(Device.class);
-        for (Device device : allForTest) {
-           // context
-        }
-
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance
-                (context);
-
-        // Uses getClass().getName() rather than MyWidget.class.getName() for
-        // portability into any App Widget Provider Class
-        ComponentName thisAppWidgetComponentName =
-                new ComponentName(context.getPackageName(),getClass().getName()
-                );
-        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(
-                thisAppWidgetComponentName);
-        onUpdate(context, appWidgetManager, appWidgetIds);
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
+        String string = intent.getAction();
+        String ActionMode;
+        String incomingWidgetID;
 
-        // Find the widget id from the intent.
-      //  Intent intent = getIntent();
-
-        Bundle extras = intent.getExtras();
-       // intent.get
-        if (extras != null) {
-           int mAppWidgetId = extras.getInt(
-                    AppWidgetManager.EXTRA_APPWIDGET_ID,
-                    AppWidgetManager.INVALID_APPWIDGET_ID);
-            int stop=1;
-            CharSequence bundlestring = extras.getCharSequence("ID");
-            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-            ComponentName thisAppWidget = new ComponentName(context.getPackageName(), example_appwidget_info.class.getName());
-            int[] appWidgetIds = appWidgetManager.getAppWidgetIds(thisAppWidget);
-            stop = 2;
+        if (string.contains(SeperatorCharacter)) {
+            // Split it.
+            String[] parts = string.split("\\"+SeperatorCharacter);
+            String part1 = parts[0]; // 004
+            String part2 = parts[1]; // 034556
+            ActionMode = part1;
+            incomingWidgetID = part2;
+        } else {
+            //throw new IllegalArgumentException("String " + string + " does not contain "+SeperatorCharacter);
+            ActionMode="NONE";
+            incomingWidgetID="";
         }
+        if (ACTION_UPDATE_CLICK.equals(ActionMode)) {
+            //onUpdateFromReceive(context);
+            //  updateAppWidget(context,appWidgetManager,mAppWidgetId);
 
-        if (ACTION_UPDATE_CLICK.equals(intent.getAction())) {
-            onUpdateFromReceive(context);
+            Toast.makeText(context, "From the "+incomingWidgetID+" widget (do special work)", Toast.LENGTH_SHORT).show();
         }
     }
-    private static PendingIntent getPendingSelfIntent(Context context, String action) {
-        // An explicit intent directed at the current class (the "self").
-        Intent intent = new Intent(context, example_appwidget_info.class);
-        intent.setAction(action);
-        return PendingIntent.getBroadcast(context, 0, intent, 0);
-    }
+
+
 }
 
 
