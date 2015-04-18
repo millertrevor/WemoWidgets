@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.belkin.wemo.localsdk.WeMoDevice;
@@ -121,6 +122,13 @@ int blocker = 1;
         for (String udn : udns) {
             WeMoDevice listDevice = mWeMoSDKContext.getWeMoDeviceByUDN(udn);
             List<Device> devices = Device.find(Device.class,"udn = ?",udn);
+            Log.i("WemoService.activity","");
+            Log.i("WemoService.activity","UDN: "+udn);
+            Log.i("WemoService.activity","Found this many devices: "+devices.size());
+            for (Device device : devices) {
+                Log.i("WemoService.activity","UDN: "+device.getUdn());
+            }
+            Log.i("WemoService.activity","");
             List<Device> allForTest = Device.listAll(Device.class);
             if(devices.size()>1){
                 int whoops = -1;
@@ -164,6 +172,13 @@ int blocker = 1;
     private void OnChangeOrSetStateNotify(final WeMoDevice listDevice, final String udn) {
        // WeMoDevice listDevice = mWeMoSDKContext.getWeMoDeviceByUDN(udn);
         List<Device> devices = Device.find(Device.class, "udn = ?", udn);
+        Log.i("WemoService.activity","");
+        Log.i("WemoService.activity","UDN: "+udn);
+        Log.i("WemoService.activity","Found this many devices: "+devices.size());
+        for (Device device : devices) {
+            Log.i("WemoService.activity","UDN: "+device.getUdn());
+        }
+        Log.i("WemoService.activity","");
        // List<Device> allForTest = Device.listAll(Device.class);
         if(devices.size()>1){
             int whoops = -1;

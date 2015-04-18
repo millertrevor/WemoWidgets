@@ -9,16 +9,24 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RemoteViews;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class AppWidgetConfigure extends ActionBarActivity {
     int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
     EditText mAppWidgetText;
+    private RadioGroup mListView;
     private static final String PREFS_NAME = "com.trevor.multiplewidgettest.WemoWidget";
     private static final String PREF_PREFIX_KEY = "appwidget_";
 
@@ -37,6 +45,18 @@ public class AppWidgetConfigure extends ActionBarActivity {
         setContentView(R.layout.activity_app_widget_configure);
         mAppWidgetText = (EditText) findViewById(R.id.appwidget_text);
         findViewById(R.id.add_button).setOnClickListener(mOnClickListener);
+       
+        mListView = (RadioGroup)findViewById(R.id.widget_list);//new listView here!
+        ArrayList<Device> devices =new ArrayList<Device>(Device.listAll(Device.class));
+       // mListView.setAdapter(new Adapter(getApplicationContext(), 0, devices));
+
+      //  ArrayList<RadioButton> buttons = new ArrayList<>();
+        for (Device device : devices) {
+            RadioButton rb = new RadioButton(this);
+            rb.setText(device.getFriendlyName());
+           // buttons.add(rb);
+            mListView.addView(rb);
+        }
 
         // Find the widget id from the intent.
         Intent intent = getIntent();
