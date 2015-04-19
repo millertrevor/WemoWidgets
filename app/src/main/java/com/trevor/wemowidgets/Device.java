@@ -16,20 +16,20 @@ public class Device extends SugarRecord<Device> {
     String serialNumber;
     String state;
     String network;
-    String[] widgets;
+  //  String[] widgets;
 
     public Device() {
 
     }
 
-    public Device(String udn, String type, String friendlyName, String serialNumber, String state, String network, String[] widgets) {
+    public Device(String udn, String type, String friendlyName, String serialNumber, String state, String network) {
         this.udn = udn;
         this.type = type;
         this.friendlyName = friendlyName;
         this.serialNumber = serialNumber;
         this.state = state;
         this.network=network;
-        this.widgets = widgets;
+       // this.widgets = widgets;
     }
     public String getUdn(){
         return udn;
@@ -43,18 +43,21 @@ public class Device extends SugarRecord<Device> {
     public void setNetwork(String network){
         this.network=network;
     }
-    public String[] getWidgets(){return widgets;}
-    public void addWidget(String widgetID){
+ /*   public  List<Widget> getWidgets(){
+        Widget.find(Widget.class,"", Widget.)
+     //   return Book.find(Book.class, "author = ?", new String{author.getId()})
+    }*/
+   /* public void addWidget(String widgetID){
         List<String> list = new ArrayList<String>(Arrays.asList(widgets));
         if(!list.contains(widgetID))
         {
             list.add(widgetID);
         }
         widgets = list.toArray(widgets);
-    }
-    public void removeWidget(String widgetID) {
+    }*/
+   /* public void removeWidget(String widgetID) {
         List<String> list = new ArrayList<String>(Arrays.asList(widgets));
         list.removeAll(Arrays.asList(widgetID));
         widgets = list.toArray(widgets);
-    }
+    }*/
 }

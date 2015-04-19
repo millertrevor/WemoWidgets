@@ -122,13 +122,13 @@ int blocker = 1;
         for (String udn : udns) {
             WeMoDevice listDevice = mWeMoSDKContext.getWeMoDeviceByUDN(udn);
             List<Device> devices = Device.find(Device.class,"udn = ?",udn);
-            Log.i("WemoService.activity","");
-            Log.i("WemoService.activity","UDN: "+udn);
+            Log.i("WemoService.activity","       --         ");
+            Log.i("WemoService.activity","UDN passed in: "+udn);
             Log.i("WemoService.activity","Found this many devices: "+devices.size());
             for (Device device : devices) {
                 Log.i("WemoService.activity","UDN: "+device.getUdn());
             }
-            Log.i("WemoService.activity","");
+            Log.i("WemoService.activity","        ----           ");
             List<Device> allForTest = Device.listAll(Device.class);
             if(devices.size()>1){
                 int whoops = -1;
@@ -153,6 +153,7 @@ int blocker = 1;
                     d.type = listDevice.getType();
                     d.udn = listDevice.getUDN();
                     d.save();
+                    d.notify();
                 }
             }
            // if (listDevice != null && listDevice.isAvailable()) {
@@ -172,13 +173,13 @@ int blocker = 1;
     private void OnChangeOrSetStateNotify(final WeMoDevice listDevice, final String udn) {
        // WeMoDevice listDevice = mWeMoSDKContext.getWeMoDeviceByUDN(udn);
         List<Device> devices = Device.find(Device.class, "udn = ?", udn);
-        Log.i("WemoService.activity","");
+        Log.i("WemoService.activity","       -notify-                          ");
         Log.i("WemoService.activity","UDN: "+udn);
         Log.i("WemoService.activity","Found this many devices: "+devices.size());
         for (Device device : devices) {
             Log.i("WemoService.activity","UDN: "+device.getUdn());
         }
-        Log.i("WemoService.activity","");
+        Log.i("WemoService.activity","         -change-              ");
        // List<Device> allForTest = Device.listAll(Device.class);
         if(devices.size()>1){
             int whoops = -1;
@@ -193,6 +194,7 @@ int blocker = 1;
             d.type = listDevice.getType();
             d.udn = listDevice.getUDN();
             d.save();
+            d.notify();
         }
         else
         {
@@ -204,6 +206,7 @@ int blocker = 1;
             d.type = listDevice.getType();
             d.udn = listDevice.getUDN();
             d.save();
+            d.notify();
         }
         /*
         if (mListView != null) {
@@ -236,6 +239,7 @@ int blocker = 1;
         d.type = wemoDevice.getType();
         d.udn = wemoDevice.getUDN();
         d.save();
+        d.notify();
 
         /*Adapter adapter = (Adapter) mListView.getAdapter();
         if (adapter != null) {
