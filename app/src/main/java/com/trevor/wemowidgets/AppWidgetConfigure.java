@@ -19,6 +19,9 @@ import android.widget.RadioGroup;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
+import com.belkin.wemo.localsdk.WeMoDevice;
+import com.belkin.wemo.localsdk.WeMoSDKContext;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +37,7 @@ public class AppWidgetConfigure extends ActionBarActivity {
         super();
     }
 
+
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
@@ -47,13 +51,17 @@ public class AppWidgetConfigure extends ActionBarActivity {
         findViewById(R.id.add_button).setOnClickListener(mOnClickListener);
        
         mListView = (RadioGroup)findViewById(R.id.widget_list);//new listView here!
-        ArrayList<Device> devices =new ArrayList<Device>(Device.listAll(Device.class));
+        //ArrayList<Device> devices =new ArrayList<Device>(Device.listAll(Device.class));
+        ArrayList<String> udns = WemoService.GetAllKnownUDNS();
+        WeMoSDKContext mWeMoSDKContext = new WeMoSDKContext(this);
        // mListView.setAdapter(new Adapter(getApplicationContext(), 0, devices));
 
       //  ArrayList<RadioButton> buttons = new ArrayList<>();
-        for (Device device : devices) {
+        //for (Device device : devices) {
+        for(String udn : udns){
+            WeMoDevice wemoDevice = mWeMoSDKContext.getWeMoDeviceByUDN(udn);
             RadioButton rb = new RadioButton(this);
-            rb.setText(device.getFriendlyName());
+            rb.setText(wemoDevice.getFriendlyName());
            // buttons.add(rb);
             mListView.addView(rb);
         }
