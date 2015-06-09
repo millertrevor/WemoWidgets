@@ -25,9 +25,41 @@ public class WemoService extends Service implements WeMoSDKContext.NotificationL
     IBinder mBinder;      // interface for clients that bind
     boolean mAllowRebind; // indicates whether onRebind should be used
     private WeMoSDKContext mWeMoSDKContext = null;
-    private ArrayList<String> _udns = new ArrayList<String>();
+    public static ArrayList<String> _udns = new ArrayList<String>();
     Handler mHandler;
     private final Semaphore semaphore = new Semaphore(1);
+
+    public static ArrayList<String> GetAllKnownUDNS(){
+        ArrayList<String> toreturn = new ArrayList<>();
+        toreturn.addAll(_udns);
+        List<Device> comparison = Device.listAll(Device.class);
+        for (Device device : comparison) {
+            if(toreturn.contains(device.getUdn())){
+                //donothing
+            }
+            else{
+                _udns.add(device.getUdn());
+                toreturn.add(device.getUdn());
+            }
+        }
+        return toreturn;
+    }
+    public static String FindUDN(String incomingUDN){
+        if(_udns.contains(incomingUDN))
+        {
+            return incomingUDN;
+        }
+        else {
+            List<Device> comparison = Device.listAll(Device.class);
+            for (Device device : comparison) {
+                if (device.getUdn().equalsIgnoreCase(incomingUDN)) {
+                    _udns.add(device.getUdn());
+                    return device.getUdn();
+                }
+            }
+        }
+            return "";
+    }
 
     @Override
     public void onCreate() {
@@ -39,6 +71,11 @@ public class WemoService extends Service implements WeMoSDKContext.NotificationL
         mWeMoSDKContext.refreshListOfWeMoDevicesOnLAN();
 
         EventBus.getDefault().register(this);
+
+        List<Device> comparison = Device.listAll(Device.class);
+        for (Device device : comparison) {
+            _udns.add(device.getUdn());
+        }
     }
 
 
@@ -173,6 +210,14 @@ int blocker = 1;
     private void OnChangeOrSetStateNotify(final WeMoDevice listDevice, final String udn) {
        // WeMoDevice listDevice = mWeMoSDKContext.getWeMoDeviceByUDN(udn);
         List<Device> devices = Device.find(Device.class, "udn = ?", udn);
+       if( _udns.contains(udn))
+        {
+
+        }
+        else
+       {
+           _udns.add(udn);
+       }
         Log.i("WemoService.activity","       -notify-                          ");
         Log.i("WemoService.activity","UDN: "+udn);
         Log.i("WemoService.activity","Found this many devices: "+devices.size());
