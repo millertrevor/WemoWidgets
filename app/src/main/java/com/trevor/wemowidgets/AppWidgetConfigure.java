@@ -60,10 +60,12 @@ public class AppWidgetConfigure extends ActionBarActivity {
         //for (Device device : devices) {
         for(String udn : udns){
             WeMoDevice wemoDevice = mWeMoSDKContext.getWeMoDeviceByUDN(udn);
-            RadioButton rb = new RadioButton(this);
-            rb.setText(wemoDevice.getFriendlyName());
-           // buttons.add(rb);
-            mListView.addView(rb);
+            if(wemoDevice!=null) {
+                RadioButton rb = new RadioButton(this);
+                rb.setText(wemoDevice.getFriendlyName());
+                // buttons.add(rb);
+                mListView.addView(rb);
+            }
         }
 
         // Find the widget id from the intent.
@@ -85,10 +87,10 @@ public class AppWidgetConfigure extends ActionBarActivity {
 
     View.OnClickListener mOnClickListener = new View.OnClickListener() {
         public void onClick(View v) {
-            final Context context = AppWidgetConfigure.this;
+            final Context context = AppWidgetConfigure.this; //HERE is where we need to go
 
             // When the button is clicked, store the string locally
-            String widgetText = mAppWidgetText.getText().toString();
+            String widgetText = mAppWidgetText.getText().toString();//INSTEAD of string get the radio button selected.
             saveTitlePref(context, mAppWidgetId, widgetText);
 
             // It is the responsibility of the configuration activity to update the app widget
